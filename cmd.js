@@ -45,8 +45,8 @@ commands.info = function(){
 };
 
 if(config.sync){
-    hexo.on('generateAfter', sync.scan);
-    hexo.on('ready', sync.scan_end);
+    hexo.on('generateBefore', sync.scan);
+    hexo.on('generateAfter', sync.scan_end);
     // hexo.on('server', sync.watch);
 } else {
     log.w('qiniu sync is off');
