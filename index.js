@@ -1,7 +1,9 @@
 global.hexo = hexo;
 global.colors = require('colors');
+global.$mapping = {}; 
 var fs = require('fs');
 var path = require('path');
+var url = require('url');
 var publicDir = hexo.public_dir;
 var sourceDir = hexo.source_dir;
 var htmlTag = require('hexo-util').htmlTag;
@@ -48,14 +50,25 @@ var parseAttrs = function(argArray){
  * 注意：参数值有空格的需要用引号将整个配置项括起来
  */
 var qnImgTag = function(args,content){
-  var imageName = args[0]; 
+  var imageName = path.normalize(args[0]);
   var imgAttr = parseAttrs(args);
   //如果设置了normal标志或者在离线状态，则不使用扩展值。
   //否则优先使用标签扩展值，最后选择全局配置扩展值
   var process = (imgAttr.normal || config.offline) ? '' : (imgAttr.extend ? imgAttr.extend : config.image.extend);
   delete imgAttr.normal;
   delete imgAttr.extend;
-  imgAttr.src  = [imgPrefix,'/', imageName , process].join('');
+  console.log(22222222);
+  // 区分 "文章资源文件夹" 情况
+  if(hexo.config.post_asset_folder == true) {
+    var PostAsset = hexo.model('PostAsset');
+    var asset = PostAsset.findOne({post: this._id, slug: imageName});
+    if(!asset) { console.log(imageName); return; }
+    var assetPath = url.resolve('/', asset.path);
+    global.$mapping[asset.source] = config.dirPrefix + assetPath;
+    imgAttr.src  = [  config.offline ? '' : config.url_Prefix, assetPath, process].join('');
+  } else {
+    imgAttr.src  = [imgPrefix, url.resolve('/', imageName) , process].join('');
+  }
   return htmlTag('img', imgAttr);
 };
 
@@ -85,11 +98,11 @@ var qnUrlHelper = function(path){
   return [config.url_Prefix, '/', path].join('');
 };
 
-hexo.extend.tag.register('qnimg',qnImgTag);
-hexo.extend.tag.register('qnjs',qnJsTag);
-hexo.extend.tag.register('qncss',qnCssTag);
-hexo.extend.helper.register('qnjs', qnJsHelper);
-hexo.extend.helper.register('qnurl', qnUrlHelper);
+hexo.extend.tag.register('qn_img',qnImgTag);
+hexo.extend.tag.register('qn_js',qnJsTag);
+hexo.extend.tag.register('qn_css',qnCssTag);
+hexo.extend.helper.register('qn_js', qnJsHelper);
+hexo.extend.helper.register('qn_url', qnUrlHelper);
 
 command_options = {
   desc: package_info.description,

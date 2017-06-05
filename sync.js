@@ -71,8 +71,15 @@ var qetag = require('./qetag');
  */
 var check_upload = function (file, name) {
     //uploadFile(config.bucket, file.replace(/\\/g, '/'), name);
-    
-    
+
+    if (isIgnoringFiles(name)) {
+        ignoring_log && log.i(name + ' ignoring.'.yellow);
+        return;
+    }
+
+    name = global.$mapping[file] ? global.$mapping[file] : name;
+    console.log('33333333333', name);
+
 
     //获取文件信息
     client.stat(config.bucket, name, function(err, ret) {
@@ -179,7 +186,6 @@ function isIgnoringFiles(path){
     for (var i = 0, l = ignoring_files.length; i < l; i++){
         if (minimatch(path, ignoring_files[i])) return true;
     }
-
     return false;
 }
 
@@ -194,17 +200,12 @@ var sync = function (dir) {
     var files = fs.readdirSync(path.join(local_dir,dir));
     files.forEach(function(file)  {
         var fname = path.join(local_dir + '', dir + '', file + '');
-    var stat = fs.lstatSync(fname);
+        var stat = fs.lstatSync(fname);
         if(stat.isDirectory() == true) {
             sync(path.join(dir + '', file + ''));
         } else  {
             var name = path.join(dirPrefix, fname.replace(local_dir, '')).replace(/\\/g, '/').replace(/^\//g, '');
-
-            if (!isIgnoringFiles(name)) {
-                check_upload(fname, name);
-            } else {
-                ignoring_log && log.i(name + ' ignoring.'.yellow);
-            }
+            check_upload(fname, name);
         }
     })
 };
@@ -221,6 +222,7 @@ var sync2 = function () {
  * 遍历目录扫描需上传文件
  */
 var scan = function () {
+    console.log(11111111);
     scan_mode = true;
     sync();
 };
