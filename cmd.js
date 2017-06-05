@@ -19,9 +19,6 @@ var mkcdndir = function (dirpath) {
 
 var local_dir = config.local_dir ? config.local_dir : 'cdn';
 mkcdndir(local_dir);
-mkcdndir(path.join(local_dir, config.image.folder));
-mkcdndir(path.join(local_dir, config.js.folder));
-mkcdndir(path.join(local_dir, config.css.folder));
 
 commands.sync = function(){
     if (config.access_key && config.secret_key && config.bucket) {
@@ -29,7 +26,6 @@ commands.sync = function(){
     } else {
         console.log('Qiniu config is not complete.\nCan\'t Sync.'.red);
     }
-
 };
 
 commands.sync2 = function(){
@@ -48,18 +44,10 @@ commands.info = function(){
     console.log('Bugs'.bold + ':    ' + package_info.bugs.url);
 };
 
-// hexo.on('ready', sync.unsymlink);
-// hexo.on('exit', sync.unsymlink);
-
-
 if(config.sync){
     hexo.on('generateAfter', sync.scan);
     hexo.on('ready', sync.scan_end);
-    hexo.on('server', sync.watch);
+    // hexo.on('server', sync.watch);
 } else {
     log.w('qiniu sync is off');
-    // hexo.on('server', function(){
-    //     sync.symlink(false);
-    // });
 }
-// hexo.on('deployBefore', sync.unsymlink);   

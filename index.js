@@ -57,7 +57,6 @@ var qnImgTag = function(args,content){
   var process = (imgAttr.normal || config.offline) ? '' : (imgAttr.extend ? imgAttr.extend : config.image.extend);
   delete imgAttr.normal;
   delete imgAttr.extend;
-  console.log(22222222);
   // 区分 "文章资源文件夹" 情况
   if(hexo.config.post_asset_folder == true) {
     var PostAsset = hexo.model('PostAsset');

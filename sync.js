@@ -48,7 +48,7 @@ function uploadFile(key, localFile) {
     qiniu.io.putFile(uptoken, key, localFile, extra, function(err, ret) {
       if(!err) {
         // 上传成功， 处理返回值
-        //console.log(ret.hash, ret.key, ret.persistentId);       
+        console.log(ret, ret.hash, ret.key, ret.persistentId);       
       } else {
         // 上传失败， 处理返回代码
         console.log(err);
@@ -78,8 +78,6 @@ var check_upload = function (file, name) {
     }
 
     name = global.$mapping[file] ? global.$mapping[file] : name;
-    console.log('33333333333', name);
-
 
     //获取文件信息
     client.stat(config.bucket, name, function(err, ret) {
@@ -222,7 +220,6 @@ var sync2 = function () {
  * 遍历目录扫描需上传文件
  */
 var scan = function () {
-    console.log(11111111);
     scan_mode = true;
     sync();
 };
